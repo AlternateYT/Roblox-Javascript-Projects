@@ -29,7 +29,7 @@ async function run() {
             }
         )
     }
-    setTimeout(run, 2500)
+    setTimeout(run, 5000)
 }
 
 notifier.on('click', async function() {
@@ -43,13 +43,9 @@ async function load() {
         infBadges = await noblox.getPlayerBadges(parseInt(userID), 1e9, "Asc")
     } catch {
         userExists = false
-        console.log("User does not exist!".red.bold)
+        console.log("Failed to load user, likely caused by server overflow.".red.bold)
     }
     if (userExists) {
-        for (var badge in infBadges) {
-            badgeCount++
-        }
-        console.log(`\nLoading ${badgeCount} badge(s)..`.green.bold)
         var totalBadges = 0
         for (var badge in badges) {
             totalBadges++
@@ -74,4 +70,21 @@ async function load() {
     }
 }
 
-load()
+async function preLoad() {
+    var userExists = true
+    try {
+        infBadges = await noblox.getPlayerBadges(parseInt(userID), 1e9, "Asc")
+    } catch {
+        userExists = false
+        console.log("User does not exist!".red.bold)
+    }
+    if (userExists) {
+        for (var badge in infBadges) {
+            badgeCount++
+        }
+        console.log(`\nLoading ${badgeCount} badge(s)..`.green.bold)
+        setTimeout(load, 1500)
+    }
+}
+
+preLoad()
